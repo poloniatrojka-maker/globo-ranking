@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Globo do ranking: 179 países</title>
+<style>
+:root{--bg:#f7f8f8;--surface:#e3eef0;--land:#cfd5d6;--line:#f7f8f8;--text:#14272b;--muted:#4f6165;--border:#9fb3b7}
+@media (prefers-color-scheme:dark){:root{--bg:#10191b;--surface:#1b2c30;--land:#3a4749;--line:#10191b;--text:#e8f0f1;--muted:#a3b5b8;--border:#4c6469}}
+*{box-sizing:border-box}
+body{margin:0;padding:16px;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin:0 0 12px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;color:var(--muted)}
+button{font:inherit;color:var(--text);background:transparent;border:1px solid var(--border);border-radius:8px;padding:5px 12px;cursor:pointer}
+button:hover{background:var(--surface)}
+button:focus-visible,input:focus-visible{outline:2px solid #2A8294;outline-offset:2px}
+svg{width:100%;height:auto;display:block;cursor:grab;touch-action:none}
+#lg{display:grid;grid-template-columns:repeat(3,max-content);gap:6px 24px;color:var(--muted);margin-top:8px}
+#lg span{display:flex;align-items:center;gap:6px}
+#lg i{width:14px;height:14px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<main>
+<h1>Globo do ranking: 179 países</h1>
+<div class="bar">
+<span>Zoom</span>
+<button class="z" data-k="1">1x</button><button class="z" data-k="2">2x</button><button class="z" data-k="3">3x</button>
+<input type="range" id="s" min="1" max="3" step="0.1" value="1" style="width:150px" aria-label="Zoom">
+<span id="o" style="min-width:32px">1,0x</span>
+<button id="b">Pausar rotação</button>
+</div>
+<svg id="g" viewBox="0 0 680 700" role="img" aria-label="Globo terrestre giratório com o ranking de países"></svg>
+<div id="lg"></div>
+<p style="color:var(--muted)">Arraste para girar. Use a roda de rolagem sobre o globo para dar zoom.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const D={Denmark:[1,"Dinamarca",9.5,56],Ireland:[2,"Irlanda"],Belgium:[3,"Bélgica"],Estonia:[4,"Estônia"],Switzerland:[5,"Suíça"],France:[6,"França",2.5,46.5],Luxembourg:[7,"Luxemburgo"],Norway:[8,"Noruega",9,61.5],Czechia:[9,"Tchéquia"],Sweden:[10,"Suécia",16,62.5],Finland:[11,"Finlândia"],"South Korea":[12,"Coreia do Sul"],Canada:[13,"Canadá",-100,60],Latvia:[14,"Letônia"],Uruguay:[15,"Uruguai"],"New Zealand":[16,"Nova Zelândia",172,-41],Chile:[17,"Chile",-71,-33],Jamaica:[18,"Jamaica"],Austria:[19,"Áustria"],Poland:[20,"Polônia"],Lithuania:[21,"Lituânia"],Australia:[22,"Austrália",134,-25],"Costa Rica":[23,"Costa Rica"],Germany:[24,"Alemanha"],Barbados:[25,"Barbados",-59.55,13.19],Brazil:[26,"Brasil",-52,-10],Netherlands:[27,"Holanda",5.5,52.2],"Dominican Rep.":[28,"Rep. Dominicana"],Kenya:[29,"Quênia"],Portugal:[30,"Portugal",-8,39.5],
+Ghana:[31,"Gana"],Suriname:[32,"Suriname"],"Trinidad and Tobago":[33,"Trinidad e Tobago",-61.2,10.5],Mauritius:[34,"Maurício",57.55,-20.3],Seychelles:[35,"Seychelles",55.45,-4.65],"Sri Lanka":[36,"Sri Lanka",80.7,7.6],Honduras:[37,"Honduras"],Namibia:[38,"Namíbia"],"Cape Verde":[39,"Cabo Verde",-23.6,15.1],Montenegro:[40,"Montenegro",19.3,42.7],Nigeria:[41,"Nigéria"],Vanuatu:[42,"Vanuatu",167,-16],Japan:[43,"Japão",138,36.5],Iceland:[44,"Islândia",-19,64.8],Spain:[45,"Espanha",-3.7,40.2],"Solomon Is.":[46,"Ilhas Salomão",160,-9],Guatemala:[47,"Guatemala"],"Papua New Guinea":[48,"Papua-Nova Guiné",145,-6.5],Taiwan:[49,"Taiwan",121,23.7],"Timor-Leste":[50,"Timor-Leste",125.8,-8.8],"South Africa":[51,"África do Sul",25,-29],Liberia:[52,"Libéria"],"United Kingdom":[53,"Reino Unido",-2,54],Malta:[54,"Malta",14.4,35.9],"Sierra Leone":[55,"Serra Leoa"],Israel:[56,"Israel",35,31],Senegal:[57,"Senegal"],Gambia:[58,"Gâmbia",-15.4,13.45],Nepal:[59,"Nepal",84,28.3],Panama:[60,"Panamá",-80,8.5],
+Cyprus:[61,"Chipre",33,35],Colombia:[62,"Colômbia"],Greece:[63,"Grécia",22,39.5],Haiti:[64,"Haiti"],Botswana:[65,"Botsuana"],"São Tomé and Principe":[66,"São Tomé e Príncipe",6.6,0.3],Zambia:[67,"Zâmbia"],Romania:[68,"Romênia"],Mongolia:[69,"Mongólia"],Guyana:[70,"Guiana"],Kosovo:[71,"Kosovo",20.9,42.6],Slovakia:[72,"Eslováquia"],Peru:[73,"Peru"],Niger:[74,"Níger"],Italy:[75,"Itália",12.5,42.5],Malawi:[76,"Malawi"],Bulgaria:[77,"Bulgária"],Paraguay:[78,"Paraguai"],Gabon:[79,"Gabão"],Lebanon:[80,"Líbano"],Croatia:[81,"Croácia",16,45.2],Argentina:[82,"Argentina",-65,-35],Armenia:[83,"Armênia"],"United States of America":[84,"Estados Unidos",-98,39],Lesotho:[85,"Lesoto"],Fiji:[86,"Fiji",178,-17.8],Ecuador:[87,"Equador"],Maldives:[88,"Maldivas",73.5,3.2],Slovenia:[89,"Eslovênia",14.8,46.1],Indonesia:[90,"Indonésia",114,-2],
+Tunisia:[91,"Tunísia"],Georgia:[92,"Geórgia",43.5,42],Bhutan:[93,"Butão",90.4,27.4],"Côte d'Ivoire":[94,"Costa do Marfim"],Bolivia:[95,"Bolívia"],Philippines:[96,"Filipinas",122,12.5],Benin:[97,"Benim"],Albania:[98,"Albânia"],"North Macedonia":[99,"Macedônia do Norte",21.7,41.6],Somaliland:[100,"Somalilândia",46,9.8],"Bosnia and Herz.":[101,"Bósnia e Herzegovina",17.8,44.2],Moldova:[102,"Moldávia"],Madagascar:[103,"Madagascar"],Mauritania:[104,"Mauritânia"],Mexico:[105,"México",-102,23.5],Somalia:[106,"Somália"],"Central African Rep.":[107,"Rep. Centro-Africana"],"Dem. Rep. Congo":[108,"RD Congo"],Thailand:[109,"Tailândia",101,15.5],Malaysia:[110,"Malásia",102,4],Morocco:[111,"Marrocos",-6.5,32],Togo:[112,"Togo"],Iraq:[113,"Iraque"],Guinea:[114,"Guiné"],Pakistan:[115,"Paquistão"],Jordan:[116,"Jordânia"],Tanzania:[117,"Tanzânia"],"Guinea-Bissau":[118,"Guiné-Bissau"],Zanzibar:[119,"Zanzibar",39.2,-6.15],Libya:[120,"Líbia"],
+Cameroon:[121,"Camarões"],Kuwait:[122,"Kuwait"],Bangladesh:[123,"Bangladesh"],Mozambique:[124,"Moçambique"],Comoros:[125,"Comores",43.3,-11.7],Angola:[126,"Angola"],Hungary:[127,"Hungria"],Mali:[128,"Mali"],Kyrgyzstan:[129,"Quirguistão"],India:[130,"Índia"],Uganda:[131,"Uganda"],Chad:[132,"Chade"],Serbia:[133,"Sérvia"],Ukraine:[134,"Ucrânia"],Zimbabwe:[135,"Zimbábue"],Singapore:[136,"Singapura",103.8,1.35],Congo:[137,"Rep. do Congo"],Algeria:[138,"Argélia"],Syria:[139,"Síria"],"El Salvador":[140,"El Salvador"],Palestine:[141,"Palestina/Cisjordânia",35.25,32],Djibouti:[142,"Djibuti"],Kazakhstan:[143,"Cazaquistão"],Sudan:[144,"Sudão"],Ethiopia:[145,"Etiópia"],"Burkina Faso":[146,"Burkina Faso"],"Palestine Gaza":[147,"Palestina/Gaza",34.4,31.4],Uzbekistan:[148,"Uzbequistão"],"Hong Kong":[149,"Hong Kong",114.17,22.32],Yemen:[150,"Iêmen"],
+Egypt:[151,"Egito"],Turkey:[152,"Turquia",35,39],Bahrain:[153,"Bahrein",50.55,26.05],Rwanda:[154,"Ruanda"],Iran:[155,"Irã"],Burundi:[156,"Burundi"],"S. Sudan":[157,"Sudão do Sul"],Cambodia:[158,"Camboja"],Oman:[159,"Omã",56,20.5],Venezuela:[160,"Venezuela"],eSwatini:[161,"Essuatíni"],"Eq. Guinea":[162,"Guiné Equatorial",10.3,1.6],Vietnam:[163,"Vietnã",107,16],Azerbaijan:[164,"Azerbaijão"],"Saudi Arabia":[165,"Arábia Saudita"],Russia:[166,"Rússia",95,62],Cuba:[167,"Cuba",-79,21.8],"United Arab Emirates":[168,"Emirados Árabes"],Qatar:[169,"Catar"],China:[170,"China",103,35],Tajikistan:[171,"Tadjiquistão"],Turkmenistan:[172,"Turcomenistão"],Laos:[173,"Laos"],Myanmar:[174,"Mianmar",96.5,21],Belarus:[175,"Bielorrússia"],Eritrea:[176,"Eritreia"],Afghanistan:[177,"Afeganistão"],Nicaragua:[178,"Nicarágua"],"North Korea":[179,"Coreia do Norte"]};
+const T=["#0A3D47","#176070","#2A8294","#7A3A08","#A9591A","#CF7F32","#3E2C6E","#5C45A0","#7C63B8","#7A1A3C","#A82E5A","#CF5C85","#1F4D2A","#3A7A3C","#5E9A47","#14295E","#2A4FA0","#5280D2"];
+const col=r=>T[Math.floor((r-1)/10)];
+const lg=document.getElementById("lg");
+for(let i=0;i<18;i++)lg.insertAdjacentHTML("beforeend",`<span><i style="background:${T[i]}"></i>${i*10+1}º a ${Math.min(i*10+10,179)}º</span>`);
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(w=>{
+const fs=topojson.feature(w,w.objects.countries).features.filter(f=>f.properties.name!=="Antarctica");
+const pts=[],seen={};
+fs.forEach(f=>{const n=f.properties.name,d=D[n];if(d){seen[n]=1;pts.push({r:d[0],n:d[1],c:d[2]!==undefined?[d[2],d[3]]:d3.geoCentroid(f)})}});
+Object.keys(D).forEach(n=>{if(!seen[n]){const d=D[n];if(d[2]!==undefined)pts.push({r:d[0],n:d[1],c:[d[2],d[3]]})}});
+const svg=d3.select("#g"),pr=d3.geoOrthographic().translate([340,350]).clipAngle(90),path=d3.geoPath(pr);
+const ocean=svg.append("circle").attr("cx",340).attr("cy",350).attr("style","fill:var(--surface);stroke:var(--border);stroke-width:.8");
+const land=svg.append("g").selectAll("path").data(fs).join("path").attr("style",f=>{const d=D[f.properties.name];return `fill:${d?col(d[0]):"var(--land)"};stroke:var(--line);stroke-width:.5`});
+const lab=svg.append("g");
+let rot=[20,-15],paused=false,drag=false,resume=0,k=1,kT=1;
+function draw(){
+pr.scale(420*k).rotate(rot);ocean.attr("r",420*k);land.attr("d",path);lab.selectAll("*").remove();
+const ctr=[-rot[0],-rot[1]],vis=pts.map(p=>({...p,d:d3.geoDistance(p.c,ctr)})).filter(p=>p.d<1.38).sort((a,b)=>a.d-b.d),box=[];
+vis.forEach(p=>{const q=pr(p.c),x=q[0],y=q[1];
+if(x<12||x>668||y<12||y>688)return;
+lab.append("circle").attr("cx",x).attr("cy",y).attr("r",10).attr("style",`fill:${col(p.r)};stroke:#fff;stroke-width:1.3`);
+lab.append("text").attr("x",x).attr("y",y).attr("text-anchor","middle").attr("dominant-baseline","central").attr("style","fill:#fff;font-size:11px;font-weight:500").text(p.r);
+const wd=p.n.length*6.3+8,b={x1:x-10,x2:x+14+wd,y1:y-10,y2:y+10};
+if(x+14+wd<676&&p.d<1.15&&!box.some(o=>b.x1<o.x2&&b.x2>o.x1&&b.y1<o.y2&&b.y2>o.y1)){box.push(b);
+lab.append("text").attr("x",x+14).attr("y",y).attr("dominant-baseline","central").attr("style","fill:var(--text);stroke:var(--bg);stroke-width:3;paint-order:stroke;font-size:11px;font-weight:500").text(p.n)}else box.push({x1:x-10,x2:x+10,y1:y-10,y2:y+10})});
+}
+svg.call(d3.drag().on("start",()=>{drag=true;svg.style("cursor","grabbing")}).on("drag",e=>{rot[0]+=e.dx*0.2/k;rot[1]=Math.max(-65,Math.min(65,rot[1]-e.dy*0.2/k));draw()}).on("end",()=>{drag=false;resume=performance.now()+1200;svg.style("cursor","grab")}));
+d3.timer(()=>{let ch=false;if(Math.abs(kT-k)>0.002){k+=(kT-k)*0.15;ch=true}
+if(!paused&&!drag&&performance.now()>resume){rot[0]+=0.2/Math.sqrt(k);ch=true}
+if(ch)draw()});
+const s=document.getElementById("s"),o=document.getElementById("o");
+const setK=v=>{v=Math.max(1,Math.min(3,+v));kT=v;s.value=v;o.textContent=v.toFixed(1).replace(".",",")+"x"};
+s.oninput=e=>setK(e.target.value);
+document.querySelectorAll(".z").forEach(b=>b.onclick=()=>setK(b.dataset.k));
+svg.node().addEventListener("wheel",e=>{e.preventDefault();setK(kT*(e.deltaY<0?1.12:1/1.12))},{passive:false});
+document.getElementById("b").onclick=e=>{paused=!paused;e.target.textContent=paused?"Retomar rotação":"Pausar rotação"};
+draw();
+}).catch(()=>{document.getElementById("g").insertAdjacentHTML("afterend","<p>Não foi possível carregar o mapa. Verifique a conexão com a internet.</p>")});
+</script>
+</body>
+</html>
